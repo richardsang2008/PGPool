@@ -167,7 +167,7 @@ def account_add():
     try:
         data = json.loads(request.data)
     except:
-        abort(400)
+        return 'Data not properly json formatted!', 400
 
     if isinstance(data, list):
         for acc in data:
