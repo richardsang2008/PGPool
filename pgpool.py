@@ -117,7 +117,6 @@ def release_accounts():
     return 'ok'
 
 
-
 @app.route('/account/update', methods=['POST'])
 def accounts_update():
     if db_updates_queue.qsize() >= cfg_get('max_queue_size'):
@@ -131,6 +130,50 @@ def accounts_update():
             db_updates_queue.put(update)
     else:
         db_updates_queue.put(data)
+    return 'ok'
+
+@app.route('/account/add', methods=['POST'])
+def account_add():
+
+    def force_account_condition(account, condition):
+        account.ban_flag = 0
+        if condition == 'good':
+            account.banned = 0
+            account.shadowbanned = 0
+            account.captcha = 0
+        elif condition == 'banned':
+            account.banned = 1
+            account.shadowbanned = 0
+            account.captcha = 0
+        elif condition == 'blind':
+            account.banned = 0
+            account.shadowbanned = 1
+            account.captcha = 0
+        elif condition == 'captcha':
+            account.banned = 0
+            account.shadowbanned = 0
+            account.captcha = 1
+
+    def add_account(acc):
+        account, created = Account.get_or_create(username=data['username'])
+        account.auth_service = acc.get('auth_service', 'ptc')
+        account.password = acc['password']
+        account.level = acc.get('level', 1)
+        if acc.get('condition', 'unknown') != 'unknown':
+            force_account_condition(account, acc.get('condition'))
+        account.save()
+        return True
+
+    try:
+        data = json.loads(request.data)
+    except:
+        abort(400)
+
+    if isinstance(data, list):
+        for acc in data:
+            add_account(acc)
+    else:
+        add_account(data)
     return 'ok'
 
 
