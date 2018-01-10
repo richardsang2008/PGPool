@@ -136,8 +136,6 @@ def accounts_update():
 def account_add():
 
     def load_accounts(s):
-        if not isinstance(s, str):      #Only attempt parsing strings
-            return []
         accounts = []
         for line in s.splitlines():
             if line.strip() == "":
@@ -184,43 +182,50 @@ def account_add():
             account.shadowbanned = 0
             account.captcha = 1
 
-    def add_account(acc):
-        account, created = Account.get_or_create(username=data['username'])
-        account.auth_service = acc.get('auth_service', 'ptc')
-        account.password = acc['password']
+    def add_account(a):
+        account, created = Account.get_or_create(username=a.get('username'))
+        account.auth_service = a.get('auth_service', 'ptc')
+        account.password = a['password']
         account.level = data.get('level', 1)
         if data.get('condition', 'unknown') != 'unknown':
             force_account_condition(account, data['condition'])
         account.save()
         return True
+
     if request.method == 'POST':
-        if 'accounts' in request.args:
-            data = request.args
-            accounts = load_accounts(data.get('accounts'))
-        elif 'accounts' in request.form:
+        if 'accounts' in request.form:
             data = request.form
+            accounts = load_accounts(data.get('accounts'))
+        elif 'accounts' in request.args:
+            data = request.args
             accounts = load_accounts(data.get('accounts'))
         else:
             data = request.get_json()
-            accounts = []
             if data:
                 accounts = data.get('accounts', [])
+            else:
+                accounts = []
 
         if data is None or len(accounts) == 0:
             msg = "No accounts provided, or data not parseable"
+            log.warning(msg)
             return msg, 503
 
         if isinstance(accounts, list):
+            n = 0
             for acc in accounts:
-                add_account(acc)
+                if add_account(acc):
+                    n += 1
+            return "Successfully added {} accounts.".format(n)
         else:
             add_account(accounts)
+            return "Successfully added 1 account."
     else:
         page = """<form method=POST>
                    <table>
                    <tr>
                    <td style='padding: 10px'>Level: <input type='number' name='level' min='0' max='40' style='width: 4em'></td>
-                   <td>Condition: 
+                   <td>Condition:
                    <select name='condition'>
                         <option value='unknown'></option>
                         <option value='good'>Good</option>
@@ -240,8 +245,6 @@ def account_add():
                    </form>
                """
         return page
-
-    return 'ok'
 
 
 def run_server():
