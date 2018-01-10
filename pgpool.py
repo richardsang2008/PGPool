@@ -216,10 +216,10 @@ def account_add():
         else:
             add_account(accounts)
     else:
-        page = """"<form method=POST>
+        page = """<form method=POST>
                    <table>
                    <tr>
-                   <td style='padding: 10px'>Level: <input type='number' name='level' min='0' max='40' size=3></td>
+                   <td style='padding: 10px'>Level: <input type='number' name='level' min='0' max='40' style='width: 4em'></td>
                    <td>Condition: 
                    <select name='condition'>
                         <option value='unknown'></option>
