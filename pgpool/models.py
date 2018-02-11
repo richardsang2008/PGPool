@@ -135,6 +135,49 @@ class Account(flaskDb.Model):
         request_lock.release()
         return accounts
 
+    @staticmethod
+    def get_LureAccounts(count=1, min_level=1, max_level=40):
+        # Only one client can request accounts at a time
+        request_lock.acquire()
+
+        #main_condition = None
+        #if banned_or_new:
+        #    main_condition = Account.banned.is_null(True) | (Account.banned == True) | (Account.shadowbanned == True)
+        #    reuse = False
+        #else:
+        #    main_condition = (Account.banned == False) & (Account.shadowbanned == False)
+
+        queries = []
+        queries.append(Account.select().where((Account.system_id.is_null(False))& (Account.lures > 0)))
+
+        accounts = []
+        for query in queries:
+            if count > 0:
+                # Additional conditions
+                if min_level > 1:
+                    query = query.where(Account.level >= min_level)
+                if max_level < 40:
+                    query = query.where(Account.level <= max_level)
+                # TODO: Add filter for nearby location
+                query = query.where(Account.lures > 0)
+                # Limitations and order
+                query = query.limit(count)
+
+                for account in query:
+                    accounts.append({
+                        'auth_service': account.auth_service,
+                        'username': account.username,
+                        'password': account.password,
+                        'latitude': account.latitude,
+                        'longitude': account.longitude,
+                        'rareless_scans': account.rareless_scans,
+                        'shadowbanned': account.shadowbanned,
+                        'last_modified': account.last_modified
+                    })
+                    count -= 1
+
+        request_lock.release()
+        return accounts
 
 class Event(flaskDb.Model):
     timestamp = DateTimeField(default=datetime.now, index=True)

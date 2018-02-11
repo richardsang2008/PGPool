@@ -91,6 +91,18 @@ def get_accounts():
         log.warning("Could only deliver {} accounts.".format(len(accounts)))
     return jsonify(accounts[0] if accounts and count == 1 else accounts)
 
+@app.route('/account/requestLure', methods=['GET'])
+def get_LureAccounts():
+    count = int(request.args.get('count', 1))
+    min_level = int(request.args.get('min_level', 1))
+    max_level = int(request.args.get('max_level', 40))
+    log.info(
+        "Lure scout requested {} accounts level {}-{} from {}".format(count, min_level, max_level,
+                                                                          request.remote_addr))
+    accounts = Account.get_LureAccounts(count, min_level, max_level)
+    if len(accounts) < count:
+        log.warning("Could only deliver {} accounts.".format(len(accounts)))
+    return jsonify(accounts[0] if accounts and count == 1 else accounts)
 
 @app.route('/account/release', methods=['POST'])
 def release_accounts():
