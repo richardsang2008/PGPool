@@ -229,6 +229,12 @@ class Filter:
         if 'system_id' in self.filter:
             if not data.get('system_id') or data.get('system_id') not in self.filter['system_id']:
                 return False
+        if 'low_lvl_threshold' in self.filter:
+            if data.get('good_low_level', 2^31) > self.filter['low_lvl_threshold']:
+                return False
+        if 'high_lvl_threshold' in self.filter:
+            if data.get('good_high_level', 2^31) > self.filter['high_lvl_threshold']:
+                return False
 
         return True
 
@@ -247,6 +253,10 @@ class Filter:
             return False, "Filter min_lvl must be an integer!"
         if 'max_lvl' in self.filter and not str(self.filter['max_lvl']).isdigit():
             return False, "Filter max_lvl must be an integer!"
+        if 'low_lvl_threshold' in self.filter and not str(self.filter['low_lvl_threshold']).isdigit():
+            return False, "Filter low_lvl_theshold must be an integer!"
+        if 'high_lvl_threshold' in self.filter and not str(self.filter['high_lvl_threshold']).isdigit():
+            return False, "Filter high_lvl_theshold must be an integer!"
         return True, ""
 
     def get_webhook_url(self):

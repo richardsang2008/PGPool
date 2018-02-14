@@ -27,7 +27,9 @@
             "types": ["assigned","levelup","warn","shadowban","ban","banflag","captcha","release"],
             "system_id": ["sys_id1", "sys_id2", "sys_id3"],
             "min_lvl": 1,
-            "max_lvl": 40
+            "max_lvl": 40,
+            "low_lvl_threshold": 100,
+            "high_lvl_threshold": 5
         }
     }
 }
