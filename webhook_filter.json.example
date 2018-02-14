@@ -19,7 +19,7 @@
             "url": "[WEBHOOK_URL_GOES_HERE]",
             "data": {
                 "username": "whatever you want",
-                "content": "These are the possible substitutions: <type>,<system_id>,<assigned_at>,<running_time>,<username>,<auth_service>,<latitude>,<longitude>,<level>,<xp>,<encounters>,<last_modified>,<warn>,<shadowbanned>,<banned>,<ban_flag>,<captcha>,<rareless_scans>,<message>,<good_low_level>,<good_high_level>,<good_total>"
+                "content": "These are the possible substitutions: <type>,<system_id>,<assigned_at>,<running_time>,<username>,<auth_service>,<latitude>,<longitude>,<level>,<xp>,<encounters>,<last_modified>,<warn>,<shadowbanned>,<banned>,<ban_flag>,<captcha>,<rareless_scans>,<message>,<good_low_level>,<good_high_level>,<good_total>",
                 "embed": "Set data to the parameters your webhook requires, all fields in data will have the above substitutions."
             }
         },
