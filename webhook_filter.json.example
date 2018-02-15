@@ -9,7 +9,7 @@
             }
         },
         "filter": {
-            "types": ["banned", "shadowbanned"],
+            "types": ["ban", "shadowban"],
             "min_lvl": 30
         }
     },
@@ -24,7 +24,7 @@
             }
         },
         "filter": {
-            "types": ["assigned","levelup","warn","shadowban","ban","banflag","captcha","release"],
+            "types": ["assign","levelup","warn","shadowban","ban","banflag","captcha","release"],
             "system_id": ["sys_id1", "sys_id2", "sys_id3"],
             "min_lvl": 1,
             "max_lvl": 40,

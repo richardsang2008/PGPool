@@ -133,7 +133,7 @@ class Account(flaskDb.Model):
                         account.assigned_at = datetime.now()
                         new_account_event(account, "Got assigned to [{}]".format(system_id))
                         if webhook_queue:
-                            webhook_queue.put(('assign', create_webhook_data('assigned', None, account,
+                            webhook_queue.put(('assign', create_webhook_data('assign', None, account,
                                                                                "Got assigned to [{}]".format(system_id))))
 
                     account.save()
