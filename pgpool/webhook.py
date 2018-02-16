@@ -193,13 +193,14 @@ def load_filters(filter_file):
             settings = filt_file[filt_key]
             if 'webhook' in settings and 'filter' in settings:
                 filt = Filter(filt_key, settings)
-                check, msg = filt.validate()
-                if check and filt.enabled:
-                    filters.append(filt)
-                    log.debug('Added filter %s', filt_key)
-                else:
-                    log.error(msg)
-                    return False
+                if filt.enabled:
+                    check, msg = filt.validate()
+                    if check:
+                        filters.append(filt)
+                        log.debug('Added filter %s', filt_key)
+                    else:
+                        log.error(msg)
+                        return False
             else:
                 log.error("Webhook filters must contain webhook and filter!")
     log.debug("Successfully loaded %d filters.", len(filt_file))
