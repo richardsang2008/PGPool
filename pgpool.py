@@ -184,31 +184,34 @@ def account_add():
             account.shadowbanned = 0
             account.captcha = 1
 
-    def add_account(level,a):
+    def add_account(a):
         account, created = Account.get_or_create(username=a.get('username'))
         account.auth_service = a.get('auth_service', 'ptc')
         account.password = a['password']
-        account.level = data.get('level', 1)
-        if data.get('condition', 'unknown') != 'unknown':
-            force_account_condition(account, data['condition'])
-        if level > '29':
-            account.reach_lvl30_datetime = datetime.datetime.now()
+        if 'input_level' in a:
+            if a['input_level'] >29:
+                account.reach_lvl30_datetime = datetime.datetime.now()
+                account.level = a['input_level']
+        else:
+            account.level = data.get('level', 1)
+            if data.get('condition', 'unknown') != 'unknown':
+                force_account_condition(account, data['condition'])
         account.save()
         return True
 
     if request.method == 'POST':
-        level =1;
         if 'accounts' in request.form:
             data = request.form
-            level = data.get('level')
             accounts = load_accounts(data.get('accounts'))
         elif 'accounts' in request.args:
             data = request.args
-            level = data.get('level')
             accounts = load_accounts(data.get('accounts'))
+        elif request.json != None and bool(request.json) == True:
+            data = str(request.json)
+            add_account(request.json)
+            return "Successfully added 1 account."
         else:
             data = request.get_json()
-            level = data.get('level')
             if data:
                 accounts = data.get('accounts', [])
             else:
@@ -222,11 +225,11 @@ def account_add():
         if isinstance(accounts, list):
             n = 0
             for acc in accounts:
-                if add_account(level,acc):
+                if add_account(acc):
                     n += 1
             return "Successfully added {} accounts.".format(n)
         else:
-            add_account(level,accounts)
+            add_account(accounts)
             return "Successfully added 1 account."
     else:
         page = """<form method=POST>
