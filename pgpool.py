@@ -184,27 +184,31 @@ def account_add():
             account.shadowbanned = 0
             account.captcha = 1
 
-    def add_account(a):
+    def add_account(level,a):
         account, created = Account.get_or_create(username=a.get('username'))
         account.auth_service = a.get('auth_service', 'ptc')
         account.password = a['password']
         account.level = data.get('level', 1)
         if data.get('condition', 'unknown') != 'unknown':
             force_account_condition(account, data['condition'])
-        if a.get('level') > 29:
+        if level > '29':
             account.reach_lvl30_datetime = datetime.datetime.now()
         account.save()
         return True
 
     if request.method == 'POST':
+        level =1;
         if 'accounts' in request.form:
             data = request.form
+            level = data.get('level')
             accounts = load_accounts(data.get('accounts'))
         elif 'accounts' in request.args:
             data = request.args
+            level = data.get('level')
             accounts = load_accounts(data.get('accounts'))
         else:
             data = request.get_json()
+            level = data.get('level')
             if data:
                 accounts = data.get('accounts', [])
             else:
@@ -218,11 +222,11 @@ def account_add():
         if isinstance(accounts, list):
             n = 0
             for acc in accounts:
-                if add_account(acc):
+                if add_account(level,acc):
                     n += 1
             return "Successfully added {} accounts.".format(n)
         else:
-            add_account(accounts)
+            add_account(level,accounts)
             return "Successfully added 1 account."
     else:
         page = """<form method=POST>
