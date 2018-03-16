@@ -20,7 +20,7 @@ flaskDb = FlaskDB()
 
 request_lock = Lock()
 
-db_schema_version = 3
+db_schema_version = 4
 
 webhook_queue = None
 
@@ -49,6 +49,7 @@ class Account(flaskDb.Model):
     password = Utf8mb4CharField(null=True)
     email = Utf8mb4CharField(null=True)
     last_modified = DateTimeField(index=True, default=datetime.now)
+    reach_lvl30_datetime = DateTimeField(index=True, null=True)
     system_id = Utf8mb4CharField(max_length=64, index=True, null=True)  # system which uses the account
     assigned_at = DateTimeField(index=True, null=True)
     latitude = DoubleField(null=True)
@@ -279,7 +280,11 @@ def migrate_database(db, old_ver):
             migrator.add_column('account', 'assigned_at',
                                 DateTimeField(index=True, null=True))
         )
-
+    if old_ver <4:
+        migrate(
+            migrator.add_column('account','reach_lvl30_datetime',
+                                DateTimeField(index=True,null=True))
+        )
     Version.update(val=db_schema_version).where(
         Version.key == 'schema_version').execute()
     log.info("Done migrating database.")
