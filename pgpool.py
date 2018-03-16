@@ -3,7 +3,6 @@ import logging
 from Queue import Queue
 from threading import Thread
 
-import datetime
 from flask import Flask, request, jsonify
 from werkzeug.exceptions import abort
 
@@ -191,8 +190,6 @@ def account_add():
         account.level = data.get('level', 1)
         if data.get('condition', 'unknown') != 'unknown':
             force_account_condition(account, data['condition'])
-        if a.get('level') >29:
-            account.reach_lvl30_datetime = datetime.datetime.now();
         account.save()
         return True
 
